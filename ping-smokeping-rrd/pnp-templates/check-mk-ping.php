@@ -1,5 +1,6 @@
 <?php
 # Copyright (c) 2015 Alexander Wilke <Wilke@iabg.de>
+#               2015 Bernhard Schmidt <Bernhard.Schmidt@lrz.de>
 # 
 # inspired by Smokeping from Tobias Oetiker <tobi@oetiker.ch>
 # http://people.ee.ethz.ch/~oetiker/webtools/smokeping/
@@ -29,6 +30,10 @@ $def[1] .= "CDEF:loss40=loss,40,LT,rtavg,UNKN,IF " ;
 $def[1] .= "CDEF:loss50=loss,50,LT,rtavg,UNKN,IF " ;
 $def[1] .= "CDEF:loss80=loss,80,LT,rtavg,UNKN,IF " ;
 $def[1] .= "CDEF:loss100=loss,80,GE,rtavg,UNKN,IF " ;
+
+# Draw red background at 100% loss
+$def[1] .= "CDEF:lossbg100=loss,100,EQ,INF,UNKN,IF " ;
+$def[1] .= "AREA:lossbg100#FFCCCC " ;
 
 $def[1] .= "CDEF:dif=rtmax,rtmin,- " ;
 
