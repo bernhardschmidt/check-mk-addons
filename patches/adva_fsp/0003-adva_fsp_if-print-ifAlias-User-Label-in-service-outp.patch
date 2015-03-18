@@ -1,0 +1,30 @@
+From fb9fb05a8b6189c548f23cefa5f919d7ac5fe0e3 Mon Sep 17 00:00:00 2001
+From: Bernhard Schmidt <berni@birkenwald.de>
+Date: Thu, 5 Mar 2015 14:34:16 +0100
+Subject: [PATCH 3/3] adva_fsp_if: print ifAlias (User Label) in service output
+ if set
+
+---
+ checks/adva_fsp_if | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/checks/adva_fsp_if b/checks/adva_fsp_if
+index d5874b1..9bcc35c 100644
+--- a/checks/adva_fsp_if
++++ b/checks/adva_fsp_if
+@@ -84,7 +84,11 @@ def check_adva_fsp_if(item, params, info):
+                 statesym = "(!)"
+             else:
+                 statesym = ""
+-            infotext = "Admin/Operational State: %s/%s %s" % ( admintxt, opertxt, statesym )
++
++            infotext = ""
++            if line[5] != "":
++                infotext += "[%s] " % line[5]
++            infotext += "Admin/Operational State: %s/%s %s" % ( admintxt, opertxt, statesym )
+ 
+             perfdata = []
+             for power, name in [ (line[6], "output"),
+-- 
+2.1.4
+

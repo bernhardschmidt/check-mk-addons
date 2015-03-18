@@ -1,0 +1,55 @@
+From 54e0db7b48a21cc4ef4c62d4d1ca1ee76cd81b96 Mon Sep 17 00:00:00 2001
+From: Bernhard Schmidt <Bernhard.Schmidt@lrz.de>
+Date: Wed, 11 Feb 2015 08:48:15 +0100
+Subject: [PATCH 1/3] adva_fsp_if: use opticalIfDiag(Input|Output)Power
+
+Our ADVA FSP3000 platform (Software 12.3.1) only offers the power levels
+of a few transponders in the currentPmSnapshot(In|Out)putPower SNMP
+table. Even worse, the values sometimes come and go during operation or
+are available using snmpget, but not using snmpwalk as check_mk does.
+
+We talked to our ADVA partner and they told us to use the
+opticalIfDiag(In|Out)putPower SNMP table. This table holds real-time
+data of all transponder cards we have available. It works reliably and
+holds the same values as the currentPm... (when it works).
+
+$ snmpwalk -v2c -On host currentPmSnapshotInputPower
+.1.3.6.1.4.1.2544.1.11.2.6.2.156.1.2.251725249 = INTEGER: -199 0.1 dBm
+.1.3.6.1.4.1.2544.1.11.2.6.2.156.1.2.251725250 = INTEGER: -119 0.1 dBm
+$ snmpwalk -v2c -On host opticalIfDiagInputPower
+.1.3.6.1.4.1.2544.1.11.2.4.3.5.1.3.251725249 = INTEGER: -199 0.1 dBm
+.1.3.6.1.4.1.2544.1.11.2.4.3.5.1.3.251725250 = INTEGER: -119 0.1 dBm
+.1.3.6.1.4.1.2544.1.11.2.4.3.5.1.3.268502529 = INTEGER: -65535 0.1 dBm
+.1.3.6.1.4.1.2544.1.11.2.4.3.5.1.3.268502530 = INTEGER: -26 0.1 dBm
+.1.3.6.1.4.1.2544.1.11.2.4.3.5.1.3.268502594 = INTEGER: -65535 0.1 dBm
+.1.3.6.1.4.1.2544.1.11.2.4.3.5.1.3.268502595 = INTEGER: -121 0.1 dBm
+.1.3.6.1.4.1.2544.1.11.2.4.3.5.1.3.268502785 = INTEGER: -24 0.1 dBm
+.1.3.6.1.4.1.2544.1.11.2.4.3.5.1.3.268502850 = INTEGER: -121 0.1 dBm
+.1.3.6.1.4.1.2544.1.11.2.4.3.5.1.3.553714433 = INTEGER: -65535 0.1 dBm
+.1.3.6.1.4.1.2544.1.11.2.4.3.5.1.3.553714434 = INTEGER: -65535 0.1 dBm
+.1.3.6.1.4.1.2544.1.11.2.4.3.5.1.3.553714435 = INTEGER: -65535 0.1 dBm
+.1.3.6.1.4.1.2544.1.11.2.4.3.5.1.3.553714499 = INTEGER: -168 0.1 dBm
+.1.3.6.1.4.1.2544.1.11.2.4.3.5.1.3.553722113 = INTEGER: -65535 0.1 dBm
+.1.3.6.1.4.1.2544.1.11.2.4.3.5.1.3.553722114 = INTEGER: -65535 0.1 dBm
+---
+ checks/adva_fsp_if | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/checks/adva_fsp_if b/checks/adva_fsp_if
+index 4489065..a31c347 100644
+--- a/checks/adva_fsp_if
++++ b/checks/adva_fsp_if
+@@ -126,8 +126,8 @@ check_info['adva_fsp_if'] = {
+                                         "2.1.2.2.1.7", # ifAdminStatus
+                                         "2.1.2.2.1.8", # ifOperStatus
+                                         "31.1.1.1.18", # ifAlias
+-                                        "4.1.2544.1.11.2.6.2.156.1.1", # currentPmSnapshotOutputPower
+-                                        "4.1.2544.1.11.2.6.2.156.1.2", # currentPmSnapshotInputPower
++                                        "4.1.2544.1.11.2.4.3.5.1.4", # opticalIfDiagOutputPower
++                                        "4.1.2544.1.11.2.4.3.5.1.3", # opticalIfDiagInputPower
+                                     ],
+                                 ),
+     "snmp_scan_function"      : lambda oid:
+-- 
+2.1.4
+
