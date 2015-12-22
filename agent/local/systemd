@@ -1,0 +1,17 @@
+#!/bin/sh
+# by Bernhard Schmidt <Bernhard.Schmidt@lrz.de>, 2015
+
+if [ ! -d /run/systemd/system ]; then
+	exit 0
+fi
+
+ACTIVE=`/bin/systemctl --no-legend | grep active | wc -l`
+FAILED=`/bin/systemctl --no-legend --failed | wc -l`
+
+STATUS=0
+if [ "$FAILED" -gt 0 ]; then
+    STATUS=2
+fi
+
+echo "$STATUS Services active=$ACTIVE|failed=$FAILED;1;1 $ACTIVE services active, $FAILED services failed"
+
